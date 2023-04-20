@@ -29,7 +29,6 @@ app.get('/recommendations', async (req, res) => {
       apiKey: process.env.CHAT_GPT_KEY
     })
 
-    console.log(prompt);
     const response = await api.sendMessage(prompt)
 
     res.send(response.text)
