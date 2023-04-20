@@ -5,7 +5,6 @@ dotenv.config()
 
 const app = express()
 
-
 // Enable CORS middleware
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
@@ -30,18 +29,7 @@ app.get('/recommendations', async (req, res) => {
       apiKey: process.env.CHAT_GPT_KEY
     })
 
-    // async function testAPI() {
-    //   try {
-    //     const prompt = 'Hello, can you recommend a good movie?'
-    //     const response = await api.sendMessage(prompt)
-    //     console.log(response.text)
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // }
-    
-    // testAPI()
-
+    console.log(prompt);
     const response = await api.sendMessage(prompt)
 
     res.send(response.text)
