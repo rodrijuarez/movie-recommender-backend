@@ -1,9 +1,12 @@
 import express from "express";
 import * as dotenv from "dotenv";
 import axios from "axios";
+import morgan from "morgan";
 dotenv.config();
 
 const app = express();
+
+app.use(morgan("combined"));
 
 // Enable CORS middleware
 app.use(function (req, res, next) {
