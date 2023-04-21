@@ -5,6 +5,20 @@ dotenv.config();
 
 const app = express();
 
+// Enable CORS middleware
+app.use(function (req, res, next) {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header(
+		"Access-Control-Allow-Methods",
+		"GET, PUT, POST, DELETE, OPTIONS"
+	);
+	res.header(
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested-With, Content-Type, Accept, Authorization"
+	);
+	next();
+});
+
 async function getRecommendations(seedItem, type, prompt) {
 	const queryParams = {
 		model: "text-davinci-003",
@@ -38,11 +52,7 @@ async function getRecommendations(seedItem, type, prompt) {
 				return { movie, director };
 			}
 		});
-
-	const key = `${type.charAt(0).toUpperCase()}${type.slice(
-		1
-	)} Recommendations`;
-	return { [key]: recommendations };
+	return recommendations;
 }
 
 async function getMovieRecommendations(seedMovie) {
@@ -65,20 +75,6 @@ async function getActorRecommendations(seedActor) {
 
 // Route to generate movie recommendations
 app.get("/recommendations", async (req, res) => {
-	const { movie } = req.query;
-
-	try {
-		const response = await getMovieRecommendations(movie);
-
-		res.send(response);
-	} catch (error) {
-		console.error(error);
-		res.status(500).send("Error generating movie recommendations");
-	}
-});
-
-// Route to generate movie director recommendations
-app.get("/director-recommendations", async (req, res) => {
 	const { director } = req.query;
 
 	try {
@@ -90,6 +86,20 @@ app.get("/director-recommendations", async (req, res) => {
 		res.status(500).send(
 			"Error generating movie director recommendations"
 		);
+	}
+});
+
+// Route to generate movie director recommendations
+app.get("/movie-recommendations", async (req, res) => {
+	const { movie } = req.query;
+
+	try {
+		const response = await getMovieRecommendations(movie);
+
+		res.send(response);
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Error generating movie recommendations");
 	}
 });
 
