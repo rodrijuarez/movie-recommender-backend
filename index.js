@@ -34,7 +34,7 @@ async function getRecommendations(seedItem, type, prompt) {
 	const url = `https://api.openai.com/v1/completions`;
 
 	const response = await axios.post(url, queryParams, { headers });
-	console.log("response", response.data);
+
 	const recommendations = response.data.choices[0].text
 		.trim()
 		.split("\n")
