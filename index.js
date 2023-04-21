@@ -6,7 +6,7 @@ dotenv.config();
 
 const app = express();
 
-app.use(morgan("combined"));
+app.use(morgan("dev"));
 
 // Enable CORS middleware
 app.use(function (req, res, next) {
@@ -38,40 +38,23 @@ async function getRecommendations(type, prompt) {
 
 	const response = await axios.post(url, queryParams, { headers });
 
-	const recommendations = response.data.choices[0].text
-		.trim()
-		.split("\n")
-		.map((line) => {
-			if (type === "movie director") {
-				const [director] = line.split(",");
-				return { director };
-			} else if (type === "movie") {
-				const [movie, director] =
-					line.split(" directed by ");
-				return { movie, director };
-			} else if (type === "actor") {
-				const [movie, director] =
-					line.split(" directed by ");
-				return { movie, director };
-			}
-		});
-	return recommendations;
+	return JSON.parse(response.data.choices[0].text);
 }
 
 async function getMovieRecommendations(seedMovie) {
-	const prompt = `Generate five movies recommendations similar to the movie ${seedMovie}`;
+	const prompt = `Generate five movies recommendations similar to the movie ${seedMovie} and send a Youtube trailer of the movie. Response in JSON format [{director, movie, trailer}]`;
 
 	return await getRecommendations("movie", prompt);
 }
 
 async function getDirectorRecommendations(seedDirector) {
-	const prompt = `Generate five movies recommendations from a different director than ${seedDirector} but with a similar style`;
+	const prompt = `Generate five movies recommendations from a different director than ${seedDirector} but with a similar style and send a Youtube trailer of the movie. Response in JSON format [{director, movie, trailer}]`;
 
 	return await getRecommendations("movie director", prompt);
 }
 
 async function getActorRecommendations(seedActor) {
-	const prompt = `Generate five movies recommendations where ${seedActor} or movies with a similar style proposed by ${seedActor}, after the movie name and year write it with directed by format`;
+	const prompt = `Generate five movies recommendations where ${seedActor} or movies with a similar style proposed by ${seedActor} and send a Youtube trailer of the movie. Response in JSON format [{director, movie, trailer}]`;
 
 	return await getRecommendations("actor", prompt);
 }
