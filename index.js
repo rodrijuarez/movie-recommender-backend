@@ -22,7 +22,7 @@ app.use(function (req, res, next) {
 	next();
 });
 
-async function getRecommendations(seedItem, type, prompt) {
+async function getRecommendations(type, prompt) {
 	const queryParams = {
 		model: "text-davinci-003",
 		prompt,
@@ -61,19 +61,19 @@ async function getRecommendations(seedItem, type, prompt) {
 async function getMovieRecommendations(seedMovie) {
 	const prompt = `Generate five movies recommendations similar to the movie ${seedMovie}`;
 
-	return await getRecommendations(seedMovie, "movie", prompt);
+	return await getRecommendations("movie", prompt);
 }
 
 async function getDirectorRecommendations(seedDirector) {
 	const prompt = `Generate five movies recommendations from a different director than ${seedDirector} but with a similar style`;
 
-	return await getRecommendations(seedDirector, "movie director", prompt);
+	return await getRecommendations("movie director", prompt);
 }
 
 async function getActorRecommendations(seedActor) {
 	const prompt = `Generate five movies recommendations where ${seedActor} or movies with a similar style proposed by ${seedActor}, after the movie name and year write it with directed by format`;
 
-	return await getRecommendations(seedActor, "actor", prompt);
+	return await getRecommendations("actor", prompt);
 }
 
 // Route to generate movie recommendations
