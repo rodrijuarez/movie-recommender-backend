@@ -101,9 +101,12 @@ async function getRecommendations(type, prompt) {
   })
 
   const textResponse = response.data.choices[0].text
+  const cleanTextResponse = textResponse.slice(
+    textResponse.indexOf('[')
+  )
 
   const moviesWithTrailers = await getTrailers(
-    JSON.parse(textResponse)
+    JSON.parse(cleanTextResponse)
   )
 
   return moviesWithTrailers
@@ -116,7 +119,7 @@ async function getMovieRecommendations(seedMovie) {
 }
 
 async function getDirectorRecommendations(seedDirector) {
-  const prompt = `Generate five movies recommendations from a different director than ${seedDirector} but with a similar style and send the IMDB ID of the movie. Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
+  const prompt = `Generate five movie recommendations from a different director than ${seedDirector} but with a similar style and genres than ${seedDirector}, also send the IMDB ID of the movie. Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
 
   return await getRecommendations('movie director', prompt)
 }
