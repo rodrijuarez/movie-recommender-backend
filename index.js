@@ -10,6 +10,13 @@ app.use(morgan('dev'))
 
 const TMDB_URL = 'https://api.themoviedb.org/3'
 
+const viewHistory = [
+  'tt0073486', // One Flew Over the Cuckoo's Nest
+  'tt3774694', // Love
+  'tt0243017', // Waking Life
+  'tt0110912', // Pulp Fiction
+  'tt1065073', // BoyHood
+]
 // Enable CORS middleware
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
@@ -46,7 +53,7 @@ const getTrailers = async (movies) => {
     const movieVideosResponses = await Promise.all(
       movieIds.map((item) => {
         if (!item.movie_results.length)
-          return Promise.resolve(null)
+          return Promise.resolve({ data: {} })
 
         const movieURL = `${TMDB_URL}/movie/${item.movie_results[0].id}/videos`
 
@@ -82,7 +89,7 @@ const getTrailers = async (movies) => {
   }
 }
 
-async function getRecommendations(type, prompt) {
+async function getRecommendations(prompt) {
   const queryParams = {
     model: 'text-davinci-003',
     prompt,
@@ -115,19 +122,25 @@ async function getRecommendations(type, prompt) {
 async function getMovieRecommendations(seedMovie) {
   const prompt = `Generate five movies recommendations similar to the movie ${seedMovie} and send the IMDB ID of the movie. Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
 
-  return await getRecommendations('movie', prompt)
+  return await getRecommendations(prompt)
 }
 
 async function getDirectorRecommendations(seedDirector) {
   const prompt = `Generate five movie recommendations from a different director than ${seedDirector} but with a similar style and genres than ${seedDirector}, also send the IMDB ID of the movie. Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
 
-  return await getRecommendations('movie director', prompt)
+  return await getRecommendations(prompt)
 }
 
 async function getActorRecommendations(seedActor) {
   const prompt = `Generate five movies recommendations where ${seedActor} or movies with a similar style proposed by ${seedActor} and send the IMDB ID of the movie. Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
 
-  return await getRecommendations('actor', prompt)
+  return await getRecommendations(prompt)
+}
+
+async function getViewHistoryRecommendations() {
+  const prompt = `Generate five movies recommendations based on this list of imdb movies (i'm sending the IMDB ids) ${viewHistory} and send the IMDB ID of the movie. Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
+
+  return await getRecommendations(prompt)
 }
 
 // Route to generate movie recommendations
@@ -172,6 +185,20 @@ app.get('/actor-recommendations', async (req, res) => {
 
   try {
     const response = await getActorRecommendations(actor)
+
+    res.send(response)
+  } catch (error) {
+    console.error(error)
+    res
+      .status(500)
+      .send('Error generating actor recommendations')
+  }
+})
+
+// Route to generate actor recommendations
+app.get('/recommendations/history', async (req, res) => {
+  try {
+    const response = await getViewHistoryRecommendations()
 
     res.send(response)
   } catch (error) {
