@@ -120,27 +120,29 @@ async function getRecommendations(prompt) {
   return moviesWithTrailers
 }
 
-async function getMovieRecommendations(seedMovie) {
-  const prompt = `Generate five movies recommendations similar to the movie ${seedMovie} and send the IMDB ID of the movie. Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
+const defaultPrompt = `Send the IMDB ID of the movie. Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
 
+async function getMovieRecommendations(seedMovie) {
+  const prompt = `Generate five movies recommendations similar to the movie ${seedMovie}. ${defaultPrompt}`
+  console.log("Prompt passed to ChatGPTAPI: ", prompt)
   return await getRecommendations(prompt)
 }
 
 async function getDirectorRecommendations(seedDirector) {
-  const prompt = `Generate five movie recommendations from a different director than ${seedDirector} but with a similar style and genre than ${seedDirector}, also send the IMDB ID of the movie as "imdb". Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
-
+  const prompt = `Generate five movie recommendations from a different director than ${seedDirector} but with similar style and genres. ${defaultPrompt}`
+  console.log("Prompt passed to ChatGPTAPI: ", prompt)
   return await getRecommendations(prompt)
 }
 
 async function getActorRecommendations(seedActor) {
-  const prompt = `Generate five movies recommendations where ${seedActor} or movies with a similar style proposed by ${seedActor} and send the IMDB ID of the movie. Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
-
+  const prompt = `Generate five movies recommendations where ${seedActor} is an actor, or movies with a similar style proposed by that actor. ${defaultPrompt}`
+  console.log("Prompt passed to ChatGPTAPI: ", prompt)
   return await getRecommendations(prompt)
 }
 
 async function getViewHistoryRecommendations() {
-  const prompt = `Generate five movies recommendations based on this list of imdb movies (i'm sending the IMDB ids) ${viewHistory} and send the IMDB ID of the movie. Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
-
+  const prompt = `Generate five movies recommendations based on this list of imdb movies (i'm sending the IMDB ids) ${viewHistory}. ${defaultPrompt}`
+  console.log("Prompt passed to ChatGPTAPI: ", prompt)
   return await getRecommendations(prompt)
 }
 
@@ -206,7 +208,7 @@ app.get('/recommendations/history', async (req, res) => {
     console.error(error)
     res
       .status(500)
-      .send('Error generating actor recommendations')
+      .send('Error generating history recommendations')
   }
 })
 
