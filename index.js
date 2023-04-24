@@ -91,9 +91,8 @@ const getTrailers = async (movies) => {
 
 async function getRecommendations(prompt) {
   const queryParams = {
-    model: 'text-davinci-003',
-    prompt,
-    max_tokens: 1000,
+    model: 'gpt-3.5-turbo',
+    messages: [{ role: 'user', content: prompt }],
   }
   const headers = {
     Authorization: `Bearer ${process.env.CHAT_GPT_KEY}`,
@@ -101,13 +100,15 @@ async function getRecommendations(prompt) {
   }
 
   const urlParams = new URLSearchParams(queryParams)
-  const url = `https://api.openai.com/v1/completions`
+  const url = `https://api.openai.com/v1/chat/completions`
 
   const response = await axios.post(url, queryParams, {
     headers,
   })
 
-  const textResponse = response.data.choices[0].text
+  const textResponse =
+    response.data.choices[0].message.content
+
   const cleanTextResponse = textResponse.slice(
     textResponse.indexOf('[')
   )
@@ -126,7 +127,7 @@ async function getMovieRecommendations(seedMovie) {
 }
 
 async function getDirectorRecommendations(seedDirector) {
-  const prompt = `Generate five movie recommendations from a different director than ${seedDirector} but with a similar style and genres than ${seedDirector}, also send the IMDB ID of the movie. Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
+  const prompt = `Generate five movie recommendations from a different director than ${seedDirector} but with a similar style and genre than ${seedDirector}, also send the IMDB ID of the movie as "imdb". Response in JSON format [{"director", "movie", "imdb"}] where I can use JSON.parse respecting the camel case format`
 
   return await getRecommendations(prompt)
 }
