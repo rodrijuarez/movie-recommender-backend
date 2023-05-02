@@ -6,7 +6,9 @@ dotenv.config()
 
 const app = express()
 
-app.use(morgan('dev'))
+if (process.env.DEV) {
+  app.use(morgan('dev'))
+}
 
 const TMDB_URL = 'https://api.themoviedb.org/3'
 
@@ -19,7 +21,10 @@ const viewHistory = [
 ]
 // Enable CORS middleware
 app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*')
+  res.header(
+    'Access-Control-Allow-Origin',
+    process.env.DEV ? '*' : 'https://github.com'
+  )
   res.header(
     'Access-Control-Allow-Methods',
     'GET, PUT, POST, DELETE, OPTIONS'
