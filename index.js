@@ -23,7 +23,7 @@ const viewHistory = [
 app.use(function (req, res, next) {
   res.header(
     'Access-Control-Allow-Origin',
-    process.env.DEV ? '*' : 'https://github.com'
+	  '*'
   )
   res.header(
     'Access-Control-Allow-Methods',
